@@ -1,0 +1,562 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitab Undang-Undang & Hukum - Kota Velloria</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        katA: { DEFAULT: '#10b981', light: 'rgba(16, 185, 129, 0.15)', border: '#059669' },
+                        katB: { DEFAULT: '#3b82f6', light: 'rgba(59, 130, 246, 0.15)', border: '#2563eb' },
+                        katC: { DEFAULT: '#eab308', light: 'rgba(234, 179, 8, 0.15)', border: '#ca8a04' },
+                        katD: { DEFAULT: '#ef4444', light: 'rgba(239, 68, 68, 0.15)', border: '#dc2626' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col custom-scrollbar">
+
+    <!-- Header & Hero Section -->
+    <header class="relative border-b border-slate-800 bg-slate-900/60 sticky top-0 z-30 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
+                    <i class="fa-solid font-bold text-2xl fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                        KOTA VELLORIA <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">HUKUM RESMI</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Kitab Undang-Undang Pelanggaran & Tindak Kejahatan Wilayah</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-4 text-xs">
+                <div class="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/50 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-slate-400">Total Pasal:</span>
+                    <span id="totalPasalCount" class="font-bold text-white">62</span>
+                </div>
+                <button onclick="toggleCalcModal()" class="md:hidden px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-calculator"></i> Kalkulator (<span id="mobileCalcBadge">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Section: Search, Filters, and Articles List -->
+        <section class="flex-1 min-w-0">
+            
+            <!-- Search & Quick Filters Bar -->
+            <div class="glass-panel p-4 rounded-2xl mb-6 shadow-xl space-y-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="filterPasal()" placeholder="Cari kode (misal: A1, D16) atau kata kunci pelanggaran..." 
+                        class="w-full pl-11 pr-10 py-3 bg-slate-900/90 border border-slate-700/70 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition text-sm">
+                    <button id="clearSearch" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Tabs Filter Category -->
+                <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-800/60">
+                    <button onclick="setCategory('ALL')" id="tab-ALL" class="tab-btn active px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-layer-group"></i> Semua Pasal
+                    </button>
+                    <button onclick="setCategory('A')" id="tab-A" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 bg-slate-800/80 text-slate-300 hover:bg-emerald-900/40 hover:text-emerald-400 border border-slate-700/50">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Kat. A (Lalin)
+                    </button>
+                    <button onclick="setCategory('B')" id="tab-B" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 bg-slate-800/80 text-slate-300 hover:bg-blue-900/40 hover:text-blue-400 border border-slate-700/50">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Kat. B (Ketertiban)
+                    </button>
+                    <button onclick="setCategory('C')" id="tab-C" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 bg-slate-800/80 text-slate-300 hover:bg-amber-900/40 hover:text-amber-400 border border-slate-700/50">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Kat. C (Sedang)
+                    </button>
+                    <button onclick="setCategory('D')" id="tab-D" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 bg-slate-800/80 text-slate-300 hover:bg-red-900/40 hover:text-red-400 border border-slate-700/50">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Kat. D (Berat)
+                    </button>
+                </div>
+            </div>
+
+            <!-- List Container -->
+            <div id="pasalContainer" class="space-y-4">
+                <!-- Articles will be rendered dynamically -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden glass-panel p-12 text-center rounded-2xl">
+                <i class="fa-solid fa-file-circle-xmark text-5xl text-slate-600 mb-3"></i>
+                <h3 class="text-lg font-bold text-slate-300">Tidak ada pasal ditemukan</h3>
+                <p class="text-xs text-slate-500 mt-1">Coba gunakan kata kunci pencarian yang lain atau ubah filter kategori.</p>
+            </div>
+        </section>
+
+        <!-- Right Section: Calculator Panel (Desktop Sticky) -->
+        <aside class="w-full lg:w-96 flex-shrink-0">
+            <div class="glass-panel p-5 rounded-2xl sticky top-24 shadow-2xl border border-indigo-500/20">
+                <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="p-2 rounded-lg bg-indigo-500/20 text-indigo-400">
+                            <i class="fa-solid fa-calculator text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-white text-base">Kalkulator Sanksi</h2>
+                            <p class="text-xs text-slate-400">Akumulasi Denda & Hukuman</p>
+                        </div>
+                    </div>
+                    <button onclick="clearSelected()" class="text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-right"></i> Reset
+                    </button>
+                </div>
+
+                <!-- Selected Items List -->
+                <div class="mb-5">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between">
+                        <span>Pelanggaran Dipilih</span>
+                        <span id="selectedCountBadge" class="text-indigo-400">0 Item</span>
+                    </div>
+                    <div id="selectedItemsList" class="max-h-48 overflow-y-auto custom-scrollbar space-y-2 pr-1 min-h-[60px] flex flex-col justify-center items-center border border-dashed border-slate-800 rounded-xl p-2 bg-slate-950/40">
+                        <p class="text-xs text-slate-500 italic text-center">Centang pasal di sebelah kiri untuk menghitung denda & hukuman.</p>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="space-y-3 pt-2 border-t border-slate-800">
+                    <!-- Total Impound -->
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                            <i class="fa-solid fa-car-burst text-emerald-400 text-sm"></i>
+                            <span>Total Impound (Lalin)</span>
+                        </div>
+                        <span id="totalImpound" class="font-bold text-emerald-400 text-sm">0 Hari/Sesi</span>
+                    </div>
+
+                    <!-- Total Denda (Uang) -->
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                            <i class="fa-solid fa-money-bill-wave text-amber-400 text-sm"></i>
+                            <span>Total Denda Uang</span>
+                        </div>
+                        <span id="totalDenda" class="font-extrabold text-amber-400 text-base">$0</span>
+                    </div>
+
+                    <!-- Total Hukuman Waktu/Sanksi -->
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                            <i class="fa-solid fa-clock text-indigo-400 text-sm"></i>
+                            <span>Total Hukuman (Bulan/Bintang)</span>
+                        </div>
+                        <span id="totalHukuman" class="font-bold text-indigo-400 text-sm">0 Bulan</span>
+                    </div>
+
+                    <!-- Special Penalty Alert -->
+                    <div id="specialStatus" class="hidden p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs flex items-center gap-2.5 animate-pulse">
+                        <i class="fa-solid fa-triangle-exclamation text-base text-red-400 flex-shrink-0"></i>
+                        <span id="specialStatusText" class="font-bold"></span>
+                    </div>
+                </div>
+
+                <!-- Action Copy Summary -->
+                <button onclick="copySummary()" class="w-full mt-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold text-xs tracking-wide shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i> SALIN RINGKASAN TILANG
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800 py-6 text-center text-xs text-slate-500 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 Kepolisian & Dekret Kota Velloria. Hak Cipta Dilindungi Undang-Undang.</p>
+            <p class="mt-1 text-slate-600">Sistem Informasi Kitab Undang-Undang Hukum Velloria - Versi 2.4</p>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMsg" class="text-xs font-medium"></span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Undang-Undang Kota Velloria dari 4 Kategori / Gambar
+        const pasalData = [
+            // KATEGORI A: Pelanggaran Lalu Lintas & Kendaraan (Hijau)
+            { id: "A1", cat: "A", name: "Mengemudi motor tanpa helm", denda: 0, impound: 5, hukuman: "-", specialHukuman: null },
+            { id: "A2", cat: "A", name: "Mengemudi kendaraan tanpa SIM", denda: 0, impound: 6, hukuman: "-", specialHukuman: null },
+            { id: "A3", cat: "A", name: "Kendaraan tanpa plat nomor", denda: 0, impound: 7, hukuman: "-", specialHukuman: null },
+            { id: "A4", cat: "A", name: "Melawan arus jalan", denda: 0, impound: 8, hukuman: "-", specialHukuman: null },
+            { id: "A5", cat: "A", name: "Parkir liar/sembarangan", denda: 0, impound: 9, hukuman: "-", specialHukuman: null },
+            { id: "A6", cat: "A", name: "Kecepatan melebihi 60 km/jam", denda: 0, impound: 10, hukuman: "-", specialHukuman: null },
+            { id: "A7", cat: "A", name: "Tidak mematuhi rambu jalan", denda: 0, impound: 11, hukuman: "-", specialHukuman: null },
+            { id: "A8", cat: "A", name: "Tidak membayar tol", denda: 0, impound: 12, hukuman: "-", specialHukuman: null },
+            { id: "A9", cat: "A", name: "Kendaraan di zona terlarang/ilegal", denda: 0, impound: 13, hukuman: "-", specialHukuman: null },
+            { id: "A10", cat: "A", name: "Berkendara ugal-ugalan", denda: 0, impound: 14, hukuman: "-", specialHukuman: null },
+            { id: "A11", cat: "A", name: "Memotong jalan tanpa rambu", denda: 0, impound: 15, hukuman: "-", specialHukuman: null },
+            { id: "A12", cat: "A", name: "Balapan liar", denda: 0, impound: 16, hukuman: "-", specialHukuman: null },
+            { id: "A13", cat: "A", name: "Kendaraan trucker masuk ke area keramaian", denda: 0, impound: 17, hukuman: "-", specialHukuman: null },
+            { id: "A14", cat: "A", name: "Melarikan diri dari razia", denda: 0, impound: 18, hukuman: "-", specialHukuman: null },
+            { id: "A15", cat: "A", name: "Melarikan diri saat diberhentikan", denda: 0, impound: 19, hukuman: "-", specialHukuman: null },
+            { id: "A16", cat: "A", name: "Menabrak kendaraan isi tokoh penting", denda: 0, impound: 20, hukuman: "-", specialHukuman: null },
+
+            // KATEGORI B: Pelanggaran Ringan & Ketertiban Umum (Biru)
+            { id: "B1", cat: "B", name: "Tidak Memiliki Kartu Identitas / KTP", denda: 1500, impound: 0, hukuman: 0, specialHukuman: "SANKSI SOSIAL" },
+            { id: "B2", cat: "B", name: "Menyalahgunakan Panggilan Hotline", denda: 2000, impound: 0, hukuman: 0, specialHukuman: "SANKSI SOSIAL" },
+            { id: "B3", cat: "B", name: "Merusak Fasilitas Umum", denda: 3500, impound: 0, hukuman: 6, specialHukuman: null },
+            { id: "B4", cat: "B", name: "Membuat Keributan di Tempat Umum", denda: 3000, impound: 0, hukuman: 8, specialHukuman: null },
+            { id: "B5", cat: "B", name: "Pencemaran Nama Baik Warga", denda: 5000, impound: 0, hukuman: 5, specialHukuman: null },
+            { id: "B6", cat: "B", name: "Pencemaran Nama Baik Instansi", denda: 5000, impound: 0, hukuman: 5, specialHukuman: null },
+            { id: "B7", cat: "B", name: "Melakukan Kekerasan Fisik Terhadap Warga", denda: 8000, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "B8", cat: "B", name: "Melakukan Penipuan Terhadap Warga", denda: 9000, impound: 0, hukuman: 30, specialHukuman: null },
+            { id: "B9", cat: "B", name: "Melakukan Pelecehan Seksual Terhadap Warga", denda: 10000, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "B10", cat: "B", name: "Merusak / Merebut Aset Pribadi Milik Warga", denda: 8000, impound: 0, hukuman: 30, specialHukuman: null },
+            { id: "B11", cat: "B", name: "Penghinaan terhadap Baik Instansi", denda: 11000, impound: 0, hukuman: 20, specialHukuman: null },
+            { id: "B12", cat: "B", name: "Pemberian Informasi Palsu", denda: 12000, impound: 0, hukuman: 10, specialHukuman: null },
+            { id: "B13", cat: "B", name: "Kabur Saat Diberhentikan", denda: 14000, impound: 0, hukuman: 15, specialHukuman: null },
+            { id: "B14", cat: "B", name: "Penyalahgunaan Senjata Tumpul (terkait kendaraan)", denda: 10000, impound: 0, hukuman: 20, specialHukuman: null },
+
+            // KATEGORI C: Kejahatan Sedang & Kepemilikan Ilegal (Kuning)
+            { id: "C1", cat: "C", name: "Mencuri/Merusak kendaraan orang lain", denda: 4500, impound: 0, hukuman: 15, specialHukuman: null },
+            { id: "C2", cat: "C", name: "Penyalahgunaan senjata tajam/tumpul", denda: 5000, impound: 0, hukuman: 50, specialHukuman: null },
+            { id: "C3", cat: "C", name: "Pengedaran senjata ilegal", denda: 6000, impound: 0, hukuman: 55, specialHukuman: null },
+            { id: "C4", cat: "C", name: "Melakukan pemburuan ilegal", denda: 7000, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "C5", cat: "C", name: "Kepemilikan uang merah", denda: 10000, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "C6", cat: "C", name: "Memiliki barang ilegal lainnya", denda: 5000, impound: 0, hukuman: 40, specialHukuman: null },
+            { id: "C7", cat: "C", name: "Kepemilikan barang ilegal mentah", denda: 5500, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "C8", cat: "C", name: "Kepemilikan obat-obatan terlarang", denda: 4500, impound: 0, hukuman: 30, specialHukuman: null },
+            { id: "C9", cat: "C", name: "Menanam/mencabut kanabis", denda: 7000, impound: 0, hukuman: 25, specialHukuman: null },
+            { id: "C10", cat: "C", name: "Produksi obat-obatan terlarang", denda: 8000, impound: 0, hukuman: 30, specialHukuman: null },
+            { id: "C11", cat: "C", name: "Kepemilikan senjata ilegal ringan", denda: 11000, impound: 0, hukuman: 40, specialHukuman: null },
+            { id: "C12", cat: "C", name: "Kepemilikan senjata ilegal sedang", denda: 12000, impound: 0, hukuman: 45, specialHukuman: null },
+            { id: "C13", cat: "C", name: "Kepemilikan senjata ilegal berat", denda: 14000, impound: 0, hukuman: 50, specialHukuman: null },
+            { id: "C14", cat: "C", name: "Melakukan perampokan warung", denda: 20000, impound: 0, hukuman: 100, specialHukuman: null },
+            { id: "C15", cat: "C", name: "Melakukan perampokan bank", denda: 30000, impound: 0, hukuman: 120, specialHukuman: null },
+            { id: "C16", cat: "C", name: "Melakukan pemalakan terhadap warga", denda: 10000, impound: 0, hukuman: 40, specialHukuman: null },
+
+            // KATEGORI D: Kejahatan Berat & Terorisme (Merah)
+            { id: "D1", cat: "D", name: "Terlibat dalam peperangan", denda: 30000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D2", cat: "D", name: "Memiliki senjata ilegal", denda: 30000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D3", cat: "D", name: "Pengedaran senjata ilegal", denda: 35000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D4", cat: "D", name: "Produksi senjata ilegal", denda: 35000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D5", cat: "D", name: "Melakukan penculikan terhadap warga", denda: 40000, impound: 0, hukuman: 70, specialHukuman: null },
+            { id: "D6", cat: "D", name: "Melakukan percobaan pembunuhan kepolisian", denda: 40000, impound: 0, hukuman: 80, specialHukuman: null },
+            { id: "D7", cat: "D", name: "Penyanderaan terhadap warga sipil", denda: 40000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D8", cat: "D", name: "Mengganggu proses jalannya peleburan", denda: 60000, impound: 0, hukuman: 75, specialHukuman: null },
+            { id: "D9", cat: "D", name: "Penyanderaan terhadap instansi", denda: 40000, impound: 0, hukuman: 80, specialHukuman: null },
+            { id: "D10", cat: "D", name: "Melakukan pembunuhan", denda: 40000, impound: 0, hukuman: 60, specialHukuman: null },
+            { id: "D11", cat: "D", name: "Memiliki obat-obatan terlarang", denda: 40000, impound: 0, hukuman: 50, specialHukuman: null },
+            { id: "D12", cat: "D", name: "Memiliki clip amunisi di atas 400", denda: 40000, impound: 0, hukuman: 50, specialHukuman: null },
+            { id: "D13", cat: "D", name: "Korupsi terhadap perusahaan swasta", denda: 40000, impound: 0, hukuman: 100, specialHukuman: null },
+            { id: "D14", cat: "D", name: "Korupsi anggaran pemerintah", denda: 150000, impound: 0, hukuman: 100, specialHukuman: null },
+            { id: "D16", cat: "D", name: "Terorisme", denda: 0, impound: 0, hukuman: 0, specialHukuman: "HUKUMAN MATI" }
+        ];
+
+        // State Management
+        let activeCategory = "ALL";
+        let selectedPasalIds = new Set();
+
+        // Color Configs for Categories
+        const catConfigs = {
+            A: { name: "Pelanggaran Lalu Lintas", bg: "bg-emerald-500/10", border: "border-emerald-500/40", badge: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30", text: "text-emerald-400" },
+            B: { name: "Pelanggaran Ringan & Ketertiban", bg: "bg-blue-500/10", border: "border-blue-500/40", badge: "bg-blue-500/20 text-blue-400 border-blue-500/30", text: "text-blue-400" },
+            C: { name: "Kejahatan Sedang & Kepemilikan Ilegal", bg: "bg-amber-500/10", border: "border-amber-500/40", badge: "bg-amber-500/20 text-amber-400 border-amber-500/30", text: "text-amber-400" },
+            D: { name: "Kejahatan Berat & Terorisme", bg: "bg-red-500/10", border: "border-red-500/40", badge: "bg-red-500/20 text-red-400 border-red-500/30", text: "text-red-400" }
+        };
+
+        // Initialize App
+        window.onload = function() {
+            renderPasalList();
+            updateTotals();
+        };
+
+        // Render Articles List
+        function renderPasalList() {
+            const container = document.getElementById('pasalContainer');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const emptyState = document.getElementById('emptyState');
+
+            container.innerHTML = "";
+            let matchCount = 0;
+
+            pasalData.forEach(pasal => {
+                const matchesCategory = (activeCategory === "ALL" || pasal.cat === activeCategory);
+                const matchesSearch = pasal.id.toLowerCase().includes(searchVal) || pasal.name.toLowerCase().includes(searchVal);
+
+                if (matchesCategory && matchesSearch) {
+                    matchCount++;
+                    const cfg = catConfigs[pasal.cat];
+                    const isChecked = selectedPasalIds.has(pasal.id);
+
+                    // Formatter denda/hukuman text
+                    let dendaText = pasal.impound > 0 ? `IMPOUND ${pasal.impound}` : `$${pasal.denda.toLocaleString('id-ID')}`;
+                    let hukumanText = pasal.specialHukuman ? pasal.specialHukuman : (pasal.hukuman > 0 ? `${pasal.hukuman} Bulan` : '-');
+
+                    const card = document.createElement('div');
+                    card.className = `glass-panel p-4 md:p-5 rounded-2xl transition-all duration-200 border ${isChecked ? 'ring-2 ring-indigo-500 border-indigo-500' : cfg.border} hover:border-slate-500 flex items-start gap-3 md:gap-4`;
+                    
+                    card.innerHTML = `
+                        <div class="pt-1">
+                            <input type="checkbox" id="chk-${pasal.id}" onchange="toggleSelect('${pasal.id}')" ${isChecked ? 'checked' : ''} 
+                                class="w-5 h-5 rounded border-slate-700 text-indigo-600 focus:ring-indigo-500/20 bg-slate-900 cursor-pointer accent-indigo-500">
+                        </div>
+                        <div class="flex-1 min-w-0 cursor-pointer" onclick="toggleSelectFromCard('${pasal.id}')">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold font-mono ${cfg.badge}">
+                                        ${pasal.id}
+                                    </span>
+                                    <span class="text-xs text-slate-400 hidden sm:inline">• ${cfg.name}</span>
+                                </div>
+                            </div>
+                            <h3 class="text-sm md:text-base font-semibold text-slate-100 leading-snug mb-3">
+                                ${pasal.name}
+                            </h3>
+                            <div class="flex flex-wrap items-center gap-4 text-xs">
+                                <div class="flex items-center gap-1.5 text-slate-300 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                                    <i class="fa-solid ${pasal.impound > 0 ? 'fa-car-burst text-emerald-400' : 'fa-hand-holding-dollar text-amber-400'}"></i>
+                                    <span class="text-slate-400">Denda:</span>
+                                    <span class="font-bold text-slate-100">${dendaText}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-slate-300 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                                    <i class="fa-solid fa-gavel text-indigo-400"></i>
+                                    <span class="text-slate-400">Hukuman:</span>
+                                    <span class="font-bold ${pasal.specialHukuman ? 'text-red-400' : 'text-slate-100'}">${hukumanText}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+
+            if (matchCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        // Toggle Item Selection
+        function toggleSelect(id) {
+            if (selectedPasalIds.has(id)) {
+                selectedPasalIds.delete(id);
+            } else {
+                selectedPasalIds.add(id);
+            }
+            renderPasalList();
+            updateTotals();
+        }
+
+        function toggleSelectFromCard(id) {
+            toggleSelect(id);
+        }
+
+        function clearSelected() {
+            selectedPasalIds.clear();
+            renderPasalList();
+            updateTotals();
+            showToast("Semua pilihan telah direset.");
+        }
+
+        // Update Totals Calculation
+        function updateTotals() {
+            let totalImpoundVal = 0;
+            let totalDendaVal = 0;
+            let totalHukumanVal = 0;
+            let specialStatuses = [];
+
+            const selectedItemsContainer = document.getElementById('selectedItemsList');
+            selectedItemsContainer.innerHTML = "";
+
+            if (selectedPasalIds.size === 0) {
+                selectedItemsContainer.innerHTML = `<p class="text-xs text-slate-500 italic text-center">Centang pasal di sebelah kiri untuk menghitung denda & hukuman.</p>`;
+            } else {
+                selectedPasalIds.forEach(id => {
+                    const item = pasalData.find(p => p.id === id);
+                    if (item) {
+                        totalImpoundVal += item.impound;
+                        totalDendaVal += item.denda;
+                        totalHukumanVal += item.hukuman;
+
+                        if (item.specialHukuman) {
+                            if (!specialStatuses.includes(item.specialHukuman)) {
+                                specialStatuses.push(item.specialHukuman);
+                            }
+                        }
+
+                        // Render badge in sidebar
+                        const tag = document.createElement('div');
+                        tag.className = "w-full flex items-center justify-between text-xs bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-200";
+                        tag.innerHTML = `
+                            <span class="font-bold text-indigo-400 font-mono">${item.id}</span>
+                            <span class="truncate mx-2 text-slate-300">${item.name}</span>
+                            <button onclick="toggleSelect('${item.id}')" class="text-slate-500 hover:text-red-400">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        `;
+                        selectedItemsContainer.appendChild(tag);
+                    }
+                });
+            }
+
+            // Update DOM Elements
+            document.getElementById('totalImpound').innerText = totalImpoundVal > 0 ? `IMPOUND ${totalImpoundVal}` : `0 Hari`;
+            document.getElementById('totalDenda').innerText = `$${totalDendaVal.toLocaleString('id-ID')}`;
+            document.getElementById('totalHukuman').innerText = `${totalHukumanVal} Bulan`;
+            document.getElementById('selectedCountBadge').innerText = `${selectedPasalIds.size} Item`;
+            document.getElementById('mobileCalcBadge').innerText = selectedPasalIds.size;
+
+            // Special Penalty Alert
+            const specEl = document.getElementById('specialStatus');
+            const specTxt = document.getElementById('specialStatusText');
+            if (specialStatuses.length > 0) {
+                specEl.classList.remove('hidden');
+                specTxt.innerText = `Catatan Sanksi Tambahan: ${specialStatuses.join(', ')}`;
+            } else {
+                specEl.classList.add('hidden');
+            }
+        }
+
+        // Category Filter Tabs Logic
+        function setCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+                btn.classList.add('bg-slate-800/80', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`tab-${cat}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800/80', 'text-slate-300');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+            }
+
+            renderPasalList();
+        }
+
+        // Search Filter
+        function filterPasal() {
+            const searchVal = document.getElementById('searchInput').value;
+            const clearBtn = document.getElementById('clearSearch');
+            if (searchVal.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderPasalList();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = "";
+            document.getElementById('clearSearch').classList.add('hidden');
+            renderPasalList();
+        }
+
+        // Copy Summary to Clipboard
+        function copySummary() {
+            if (selectedPasalIds.size === 0) {
+                showToast("Pilih setidaknya 1 pasal untuk disalin!");
+                return;
+            }
+
+            let summaryText = `=== SURAT TILANG / HUKUMAN KOTA VELLORIA ===\n`;
+            summaryText += `Pasal Dilanggar:\n`;
+            
+            let totalImp = 0, totalDnd = 0, totalHkm = 0;
+            let specials = [];
+
+            selectedPasalIds.forEach(id => {
+                const p = pasalData.find(item => item.id === id);
+                if (p) {
+                    summaryText += `- [${p.id}] ${p.name}\n`;
+                    totalImp += p.impound;
+                    totalDnd += p.denda;
+                    totalHkm += p.hukuman;
+                    if (p.specialHukuman && !specials.includes(p.specialHukuman)) specials.push(p.specialHukuman);
+                }
+            });
+
+            summaryText += `\nRINGKASAN TOTAL SANKSI:\n`;
+            if (totalImp > 0) summaryText += `- Total Impound: IMPOUND ${totalImp}\n`;
+            summaryText += `- Total Denda Uang: $${totalDnd.toLocaleString('id-ID')}\n`;
+            summaryText += `- Total Waktu Hukuman: ${totalHkm} Bulan\n`;
+            if (specials.length > 0) summaryText += `- Sanksi Khusus: ${specials.join(', ')}\n`;
+            summaryText += `==========================================`;
+
+            // Copy Action
+            const el = document.createElement('textarea');
+            el.value = summaryText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            showToast("Ringkasan tilang berhasil disalin ke clipboard!");
+        }
+
+        // Toast Notification Function
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Scroll smooth focus to sidebar on mobile
+        function toggleCalcModal() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
+```
